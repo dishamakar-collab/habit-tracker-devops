@@ -1,0 +1,38 @@
+name: Habit Tracker CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Get code from repo
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    # Step 2: Setup Node.js environment
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    # Step 3: Install dependencies
+    - name: Install Dependencies
+      run: npm install
+
+    # Step 4: Run ESLint (Code Quality Check)
+    - name: Run ESLint
+      run: npx eslint .
+
+    # Step 5: Run Tests (Jest)
+    - name: Run Tests
+      run: npm test
+
+    # Step 6: Build Docker Image
+    - name: Build Docker Image
+      run: docker build -t habit-tracker .
