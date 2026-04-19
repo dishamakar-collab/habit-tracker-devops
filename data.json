@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "Exercise",
+    "completed": true,
+    "streak": 3
+  },
+  {
+    "id": 4,
+    "name": "Coding",
+    "completed": false,
+    "streak": 0
+  },
+  {
+    "id": 3,
+    "name": "Meditation",
+    "completed": false,
+    "streak": 0
+  },
+  {
+    "id": 10,
+    "name": "Reading",
+    "completed": false,
+    "streak": 0
+  },
+  {
+    "id": 10,
+    "name": "Reading",
+    "completed": false,
+    "streak": 0
+  },
+  {
+    "id": 10,
+    "name": "Reading",
+    "completed": false,
+    "streak": 0
+  }
+]
