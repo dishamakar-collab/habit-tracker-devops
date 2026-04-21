@@ -16,34 +16,16 @@ res.json(habits);
 
 // POST new habit
 router.post('/', (req, res) => {
-const { name, completed, streak } = req.body;
-
-if (!name) {
-return res.status(400).json({ message: "Name is required" });
-}
-
-const newHabit = {
-id: Date.now(), // ✅ UNIQUE ID
-name,
-completed: completed ?? false,
-streak: streak ?? 0
-};
+const newHabit = req.body;
 
 addHabit(newHabit);
 
-res.json(newHabit);
+res.json({ message: 'Habit added successfully' });
 });
 
 // DELETE habit
 router.delete('/:id', (req, res) => {
-const id = Number(req.params.id);
-
-const habits = getAllHabits();
-const exists = habits.find(h => h.id === id);
-
-if (!exists) {
-return res.status(404).json({ message: "Habit not found" });
-}
+const id = req.params.id;
 
 deleteHabit(id);
 
@@ -52,21 +34,8 @@ res.json({ message: 'Habit deleted successfully' });
 
 // UPDATE habit
 router.put('/:id', (req, res) => {
-const id = Number(req.params.id);
-const { name, completed, streak } = req.body;
-
-const habits = getAllHabits();
-const habit = habits.find(h => h.id === id);
-
-if (!habit) {
-return res.status(404).json({ message: "Habit not found" });
-}
-
-const updatedData = {
-...(name !== undefined && { name }),
-...(completed !== undefined && { completed }),
-...(streak !== undefined && { streak })
-};
+const id = req.params.id;
+const updatedData = req.body;
 
 updateHabit(id, updatedData);
 
