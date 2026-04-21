@@ -2,40 +2,40 @@ const express = require('express');
 const router = express.Router();
 
 const {
-getAllHabits,
-addHabit,
-deleteHabit,
-updateHabit
+  getAllHabits,
+  addHabit,
+  deleteHabit,
+  updateHabit
 } = require('../models/habitModel');
 
 // GET all habits
 router.get('/', (req, res) => {
-const habits = getAllHabits();
-res.json(habits);
+  const habits = getAllHabits();
+  res.json(habits);
 });
 
 // POST new habit
 router.post('/', (req, res) => {
-const newHabit = req.body;
-addHabit(newHabit);
-res.json({ message: 'Habit added successfully' });
+  const newHabit = req.body;
+  addHabit(newHabit);
+  res.json({ message: 'Habit added successfully' });
 });
 
 // DELETE habit
 router.delete('/:id', (req, res) => {
-const id = req.params.id;
-deleteHabit(id);
-res.json({ message: 'Habit deleted successfully' });
+  const id = req.params.id;
+  deleteHabit(id);
+  res.json({ message: 'Habit deleted successfully' });
 });
 
-// UPDATE habit
+// UPDATE habit (mark complete + streak)
 router.put('/:id', (req, res) => {
-const id = req.params.id;
-const updatedData = req.body;
+  const id = req.params.id;
+  const updatedData = req.body;
 
-updateHabit(id, updatedData);
+  updateHabit(id, updatedData);
 
-res.json({ message: 'Habit updated successfully' });
+  res.json({ message: 'Habit updated successfully' });
 });
 
 module.exports = router;
