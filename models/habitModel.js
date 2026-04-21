@@ -1,56 +1,90 @@
 const fs = require('fs');
 
+const FILE = 'data.json';
+
+// Helper to read data
+const readData = () => {
+const data = fs.readFileSync(FILE);
+return JSON.parse(data);
+};
+
+// Helper to write data
+const writeData = (data) => {
+fs.writeFileSync(FILE, JSON.stringify(data, null, 2));
+};
+
 // GET all habits
 const getAllHabits = () => {
-  const data = fs.readFileSync('data.json');
-  return JSON.parse(data);
+return readData();
 };
 
 // ADD new habit
 const addHabit = (newHabit) => {
-  const data = fs.readFileSync('data.json');
-  const habits = JSON.parse(data);
+const habits = readData();
 
-  newHabit.streak = 0;
+const habit = {
+id: Number(newHabit.id), // ensure number
+name: newHabit.name || "Unnamed",
+completed: newHabit.completed ?? false,
+streak: newHabit.streak ?? 0
+};
 
-  habits.push(newHabit);
+habits.push(habit);
 
-  fs.writeFileSync('data.json', JSON.stringify(habits, null, 2));
+writeData(habits);
+
+return habit;
 };
 
 // DELETE habit
 const deleteHabit = (id) => {
-  const data = fs.readFileSync('data.json');
-  let habits = JSON.parse(data);
+let habits = readData();
 
-  habits = habits.filter(habit => habit && habit.id != id);
+const numId = Number(id);
 
-  fs.writeFileSync('data.json', JSON.stringify(habits, null, 2));
+const newHabits = habits.filter(habit => habit.id !== numId);
+
+writeData(newHabits);
 };
 
 // UPDATE habit
 const updateHabit = (id, updatedData) => {
-  const data = fs.readFileSync('data.json');
-  let habits = JSON.parse(data);
+let habits = readData();
 
-  habits = habits.map(habit => {
-    if (habit && habit.id == id) {
+const numId = Number(id);
 
-      if (updatedData.completed === true) {
-        habit.streak = (habit.streak || 0) + 1;
-      }
+habits = habits.map(habit => {
+if (habit.id === numId) {
 
-      return { ...habit, ...updatedData };
+```
+  // update fields safely
+  if (updatedData.name !== undefined) {
+    habit.name = updatedData.name;
+  }
+
+  if (updatedData.completed !== undefined) {
+    // increase streak only when marking true
+    if (updatedData.completed === true && habit.completed === false) {
+      habit.streak = (habit.streak || 0) + 1;
     }
-    return habit;
-  });
+    habit.completed = updatedData.completed;
+  }
 
-  fs.writeFileSync('data.json', JSON.stringify(habits, null, 2));
+  if (updatedData.streak !== undefined) {
+    habit.streak = updatedData.streak;
+  }
+}
+return habit;
+```
+
+});
+
+writeData(habits);
 };
 
 module.exports = {
-  getAllHabits,
-  addHabit,
-  deleteHabit,
-  updateHabit
+getAllHabits,
+addHabit,
+deleteHabit,
+updateHabit
 };
