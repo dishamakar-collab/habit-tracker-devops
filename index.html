@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>Habit Tracker CRUD UI</title>
+  <title>Habit Tracker UI</title>
   <style>
     body {
       font-family: Arial;
@@ -11,12 +11,8 @@
     }
 
 ```
-h1 {
-  margin-top: 20px;
-}
-
 .container {
-  width: 600px;
+  width: 700px;
   margin: auto;
   background: white;
   padding: 20px;
@@ -24,7 +20,7 @@ h1 {
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-input {
+input, select {
   padding: 8px;
   margin: 5px;
   width: 150px;
@@ -35,8 +31,8 @@ button {
   margin: 5px;
   border: none;
   border-radius: 5px;
-  cursor: pointer;
   color: white;
+  cursor: pointer;
 }
 
 .get { background: #3498db; }
@@ -71,8 +67,15 @@ th {
 
   <!-- INPUTS -->
 
+  <input type="number" id="id" placeholder="ID (for PUT/DELETE)">
   <input type="text" id="name" placeholder="Habit Name">
-  <input type="number" id="id" placeholder="ID">
+
+  <select id="completed">
+    <option value="false">Not Done</option>
+    <option value="true">Done</option>
+  </select>
+
+  <input type="number" id="streak" placeholder="Streak">
 
   <br>
 
@@ -82,7 +85,7 @@ th {
 
   <!-- TABLE -->
 
-  <table id="table">
+  <table>
     <thead>
       <tr>
         <th>ID</th>
@@ -91,7 +94,7 @@ th {
         <th>Streak</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody id="tableBody"></tbody>
   </table>
 
 </div>
@@ -105,16 +108,16 @@ async function getHabits() {
   const res = await fetch(API + "/habits");
   const data = await res.json();
 
-  const tbody = document.querySelector("#table tbody");
+  const tbody = document.getElementById("tableBody");
   tbody.innerHTML = "";
 
   data.forEach(h => {
     tbody.innerHTML += `
       <tr>
-        <td>${h.id}</td>
-        <td>${h.name}</td>
-        <td>${h.completed}</td>
-        <td>${h.streak}</td>
+        <td>${h.id ?? "-"}</td>
+        <td>${h.name ?? "-"}</td>
+        <td>${h.completed ?? "-"}</td>
+        <td>${h.streak ?? "-"}</td>
       </tr>
     `;
   });
@@ -123,23 +126,35 @@ async function getHabits() {
 // POST
 async function addHabit() {
   const name = document.getElementById("name").value;
+  const completed = document.getElementById("completed").value === "true";
+  const streak = Number(document.getElementById("streak").value) || 0;
 
   await fetch(API + "/habits", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name })
+    body: JSON.stringify({ name, completed, streak })
   });
 
   alert("Habit Added!");
   getHabits();
 }
 
-// PUT (Mark Done)
+// PUT (update habit)
 async function updateHabit() {
   const id = document.getElementById("id").value;
+  const name = document.getElementById("name").value;
+  const completed = document.getElementById("completed").value === "true";
+  const streak = Number(document.getElementById("streak").value) || 0;
+
+  if (!id) {
+    alert("Enter ID for update!");
+    return;
+  }
 
   await fetch(API + "/habits/" + id, {
-    method: "PUT"
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, completed, streak })
   });
 
   alert("Habit Updated!");
@@ -150,6 +165,11 @@ async function updateHabit() {
 async function deleteHabit() {
   const id = document.getElementById("id").value;
 
+  if (!id) {
+    alert("Enter ID to delete!");
+    return;
+  }
+
   await fetch(API + "/habits/" + id, {
     method: "DELETE"
   });
@@ -157,6 +177,9 @@ async function deleteHabit() {
   alert("Habit Deleted!");
   getHabits();
 }
+
+// Load on start
+getHabits();
 
 </script>
 
