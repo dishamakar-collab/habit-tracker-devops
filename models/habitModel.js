@@ -36,7 +36,7 @@ let habits = JSON.parse(data);
 habits = habits.map(habit => {
 if (habit && habit.id == id) {
 
-```
+
   if (updatedData.completed === true) {
     habit.streak = (habit.streak || 0) + 1;
   }
@@ -44,7 +44,6 @@ if (habit && habit.id == id) {
   return { ...habit, ...updatedData };
 }
 return habit;
-```
 
 });
 
