@@ -17,18 +17,14 @@ res.json(habits);
 // POST new habit
 router.post('/', (req, res) => {
 const newHabit = req.body;
-
 addHabit(newHabit);
-
 res.json({ message: 'Habit added successfully' });
 });
 
 // DELETE habit
 router.delete('/:id', (req, res) => {
 const id = req.params.id;
-
 deleteHabit(id);
-
 res.json({ message: 'Habit deleted successfully' });
 });
 
