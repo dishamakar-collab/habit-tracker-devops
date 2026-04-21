@@ -1,53 +1,63 @@
 const fs = require('fs');
 
-// GET all habits
-const getAllHabits = () => {
-  const data = fs.readFileSync('data.json');
-  return JSON.parse(data);
+const FILE = 'data.json';
+
+// Read data safely
+const readData = () => {
+  try {
+    const data = fs.readFileSync(FILE, 'utf-8');
+    return JSON.parse(data || '[]');
+  } catch (err) {
+    return [];
+  }
 };
 
-// ADD new habit
+// Write data safely
+const writeData = (data) => {
+  fs.writeFileSync(FILE, JSON.stringify(data, null, 2));
+};
+
+// GET all habits
+const getAllHabits = () => {
+  return readData();
+};
+
+// ADD habit
 const addHabit = (newHabit) => {
-  const data = fs.readFileSync('data.json');
-  const habits = JSON.parse(data);
+  const habits = readData();
 
-  // add streak default = 0
-  newHabit.streak = 0;
+  const habit = {
+    id: Number(newHabit.id),
+    name: newHabit.name || "Unnamed",
+    completed: newHabit.completed ?? false,
+    streak: 0
+  };
 
-  habits.push(newHabit);
+  habits.push(habit);
+  writeData(habits);
 
-  fs.writeFileSync('data.json', JSON.stringify(habits, null, 2));
+  return habit;
 };
 
 // DELETE habit
 const deleteHabit = (id) => {
-  const data = fs.readFileSync('data.json');
-  let habits = JSON.parse(data);
-
-  habits = habits.filter(habit => habit && habit.id != id);
-
-  fs.writeFileSync('data.json', JSON.stringify(habits, null, 2));
+  const habits = readData();
+  const updated = habits.filter(h => h.id !== Number(id));
+  writeData(updated);
 };
 
 // UPDATE habit (with streak logic)
 const updateHabit = (id, updatedData) => {
-  const data = fs.readFileSync('data.json');
-  let habits = JSON.parse(data);
+  const habits = readData();
 
-  habits = habits.map(habit => {
-    if (habit && habit.id == id) {
-
-      // streak logic
-      if (updatedData.completed === true) {
-        habit.streak = (habit.streak || 0) + 1;
-      }
-
+  const updated = habits.map(habit => {
+    if (habit.id === Number(id)) {
       return { ...habit, ...updatedData };
     }
     return habit;
   });
 
-  fs.writeFileSync('data.json', JSON.stringify(habits, null, 2));
+  writeData(updated);
 };
 
 module.exports = {
