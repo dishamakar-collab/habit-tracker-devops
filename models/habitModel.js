@@ -1,84 +1,54 @@
 const fs = require('fs');
 
-const FILE = 'data.json';
-
-// Read data safely
-const readData = () => {
-try {
-const data = fs.readFileSync(FILE, 'utf-8');
-return JSON.parse(data || '[]');
-} catch (err) {
-return [];
-}
-};
-
-// Write data safely
-const writeData = (data) => {
-fs.writeFileSync(FILE, JSON.stringify(data, null, 2));
-};
-
 // GET all habits
 const getAllHabits = () => {
-return readData();
+const data = fs.readFileSync('data.json');
+return JSON.parse(data);
 };
 
 // ADD new habit
 const addHabit = (newHabit) => {
-const habits = readData();
+const data = fs.readFileSync('data.json');
+const habits = JSON.parse(data);
 
-const habit = {
-id: Number(newHabit.id),
-name: newHabit.name || "Unnamed",
-completed: newHabit.completed ?? false,
-streak: newHabit.streak ?? 0
-};
+newHabit.streak = 0;
 
-habits.push(habit);
-writeData(habits);
+habits.push(newHabit);
 
-return habit;
+fs.writeFileSync('data.json', JSON.stringify(habits, null, 2));
 };
 
 // DELETE habit
 const deleteHabit = (id) => {
-const habits = readData();
-const numId = Number(id);
+const data = fs.readFileSync('data.json');
+let habits = JSON.parse(data);
 
-const updated = habits.filter(h => h.id !== numId);
+habits = habits.filter(habit => habit && habit.id != id);
 
-writeData(updated);
+fs.writeFileSync('data.json', JSON.stringify(habits, null, 2));
 };
 
 // UPDATE habit
 const updateHabit = (id, updatedData) => {
-const habits = readData();
-const numId = Number(id);
+const data = fs.readFileSync('data.json');
+let habits = JSON.parse(data);
 
-const updated = habits.map(habit => {
-if (habit.id === numId) {
+habits = habits.map(habit => {
+if (habit && habit.id == id) {
 
 ```
-  if (updatedData.name !== undefined) {
-    habit.name = updatedData.name;
+  if (updatedData.completed === true) {
+    habit.streak = (habit.streak || 0) + 1;
   }
 
-  if (updatedData.completed !== undefined) {
-    if (updatedData.completed === true && habit.completed === false) {
-      habit.streak = (habit.streak || 0) + 1;
-    }
-    habit.completed = updatedData.completed;
-  }
-
-  if (updatedData.streak !== undefined) {
-    habit.streak = updatedData.streak;
-  }
+  return { ...habit, ...updatedData };
 }
 return habit;
 ```
 
 });
 
-writeData(updated);
+fs.writeFileSync('data.json', JSON.stringify(habits, null, 2));
 };
 
 module.exports = {
