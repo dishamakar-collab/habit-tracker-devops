@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Habit Tracker CRUD UI</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f6f8;
+      text-align: center;
+    }
+
+```
+h1 {
+  margin-top: 20px;
+}
+
+.container {
+  width: 600px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+input {
+  padding: 8px;
+  margin: 5px;
+  width: 150px;
+}
+
+button {
+  padding: 10px;
+  margin: 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+}
+
+.get { background: #3498db; }
+.post { background: #2ecc71; }
+.put { background: #f39c12; }
+.delete { background: #e74c3c; }
+
+table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+th {
+  background: #333;
+  color: white;
+}
+```
+
+  </style>
+</head>
+<body>
+
+<h1>Habit Tracker CRUD UI</h1>
+
+<div class="container">
+
+  <!-- INPUTS -->
+
+  <input type="text" id="name" placeholder="Habit Name">
+  <input type="number" id="id" placeholder="ID">
+
+  <br>
+
+  <!-- BUTTONS -->
+
+<button class="get" onclick="getHabits()">GET</button> <button class="post" onclick="addHabit()">POST</button> <button class="put" onclick="updateHabit()">PUT</button> <button class="delete" onclick="deleteHabit()">DELETE</button>
+
+  <!-- TABLE -->
+
+  <table id="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Completed</th>
+        <th>Streak</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+</div>
+
+<script>
+
+const API = "https://habit-tracker-devops.onrender.com";
+
+// GET
+async function getHabits() {
+  const res = await fetch(API + "/habits");
+  const data = await res.json();
+
+  const tbody = document.querySelector("#table tbody");
+  tbody.innerHTML = "";
+
+  data.forEach(h => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${h.id}</td>
+        <td>${h.name}</td>
+        <td>${h.completed}</td>
+        <td>${h.streak}</td>
+      </tr>
+    `;
+  });
+}
+
+// POST
+async function addHabit() {
+  const name = document.getElementById("name").value;
+
+  await fetch(API + "/habits", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name })
+  });
+
+  alert("Habit Added!");
+  getHabits();
+}
+
+// PUT (Mark Done)
+async function updateHabit() {
+  const id = document.getElementById("id").value;
+
+  await fetch(API + "/habits/" + id, {
+    method: "PUT"
+  });
+
+  alert("Habit Updated!");
+  getHabits();
+}
+
+// DELETE
+async function deleteHabit() {
+  const id = document.getElementById("id").value;
+
+  await fetch(API + "/habits/" + id, {
+    method: "DELETE"
+  });
+
+  alert("Habit Deleted!");
+  getHabits();
+}
+
+</script>
+
+</body>
+</html>
