@@ -2,13 +2,17 @@ const fs = require('fs');
 
 const FILE = 'data.json';
 
-// Helper to read data
+// Read data safely
 const readData = () => {
-const data = fs.readFileSync(FILE);
-return JSON.parse(data);
+try {
+const data = fs.readFileSync(FILE, 'utf-8');
+return JSON.parse(data || '[]');
+} catch (err) {
+return [];
+}
 };
 
-// Helper to write data
+// Write data safely
 const writeData = (data) => {
 fs.writeFileSync(FILE, JSON.stringify(data, null, 2));
 };
@@ -23,14 +27,13 @@ const addHabit = (newHabit) => {
 const habits = readData();
 
 const habit = {
-id: Number(newHabit.id), // ensure number
+id: Number(newHabit.id),
 name: newHabit.name || "Unnamed",
 completed: newHabit.completed ?? false,
 streak: newHabit.streak ?? 0
 };
 
 habits.push(habit);
-
 writeData(habits);
 
 return habit;
@@ -38,32 +41,28 @@ return habit;
 
 // DELETE habit
 const deleteHabit = (id) => {
-let habits = readData();
-
+const habits = readData();
 const numId = Number(id);
 
-const newHabits = habits.filter(habit => habit.id !== numId);
+const updated = habits.filter(h => h.id !== numId);
 
-writeData(newHabits);
+writeData(updated);
 };
 
 // UPDATE habit
 const updateHabit = (id, updatedData) => {
-let habits = readData();
-
+const habits = readData();
 const numId = Number(id);
 
-habits = habits.map(habit => {
+const updated = habits.map(habit => {
 if (habit.id === numId) {
 
 ```
-  // update fields safely
   if (updatedData.name !== undefined) {
     habit.name = updatedData.name;
   }
 
   if (updatedData.completed !== undefined) {
-    // increase streak only when marking true
     if (updatedData.completed === true && habit.completed === false) {
       habit.streak = (habit.streak || 0) + 1;
     }
@@ -79,7 +78,7 @@ return habit;
 
 });
 
-writeData(habits);
+writeData(updated);
 };
 
 module.exports = {
